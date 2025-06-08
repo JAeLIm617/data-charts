@@ -17,5 +17,22 @@ export default defineConfig(({ mode }) => {
         "@/components": path.resolve(__dirname, "./src/components"),
       },
     },
+    build: {
+      outDir: "dist",
+      assetsInlineLimit: 0,
+      rollupOptions: {
+        output: {
+          manualChunks: (id: any) => {
+            if (id.includes("node_modules")) {
+              return id
+                .toString()
+                .split("node_modules/")[1]
+                .split("/")[0]
+                .toString();
+            }
+          },
+        },
+      },
+    },
   };
 });
