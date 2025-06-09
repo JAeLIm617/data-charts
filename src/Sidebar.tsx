@@ -14,7 +14,8 @@ import {
   SidebarHeader,
 } from "@/components/ui/sidebar";
 import { useConfigStore } from "@/database";
-import chartColors from "@/static";
+import chartColors from "@/static-colors";
+import html2canvas from "html2canvas-pro";
 import { useState } from "react";
 
 function SidebarComponent() {
@@ -76,7 +77,7 @@ function SidebarComponent() {
     removeConfig(key);
     if (chartData.length > 0) {
       const updatedData = chartData.map((item) => {
-        const { [key]: _, ...rest } = item; // Remove the key from the item
+        const { [key]: _, ...rest } = item;
         return rest;
       });
       setChartData(updatedData);
@@ -128,11 +129,28 @@ function SidebarComponent() {
     };
   };
 
+  const captureElement = async (elementId: string) => {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+    const canvas = await html2canvas(element);
+
+    // 이미지 다운로드
+    const link = document.createElement("a");
+    link.download = "chart-image.png";
+    link.href = canvas.toDataURL();
+    link.click();
+  };
+
   return (
     <Sidebar>
       <SidebarHeader>
+        <Button
+          variant="outline"
+          onClick={() => captureElement("chart-container")}>
+          이미지 저장
+        </Button>
         <Button variant="outline" onClick={() => resetData()}>
-          Reset
+          초기화
         </Button>
         <Popover open={popOpen} onOpenChange={setPopOpen}>
           <PopoverTrigger asChild>
@@ -167,28 +185,30 @@ function SidebarComponent() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => handleConfigDelete(key)}
-                className="btn">
+                onClick={() => handleConfigDelete(key)}>
                 X
               </Button>
             </div>
           ))}
         </SidebarGroup>
         <SidebarGroup className="space-y-1.5">
-          <h3 className="text-sm font-semibold">Chart Data</h3>
-          <Button variant="secondary" onClick={() => handleDataAdd()}>
-            Add Data
+          <h3 className="text-sm font-semibold">
+            Chart Data {chartData.length}
+          </h3>
+          <Button variant="outline" onClick={() => handleDataAdd()}>
+            데이터 추가
           </Button>
           {chartData.map((data, index) => (
             <div
               key={index}
               className="relative flex flex-col pt-6 pb-2 px-3 rounded-xl bg-accent hover:bg-accent/80 transition-colors gap-1">
-              <button
-                className="absolute top-1 right-2 text-xs text-red-500 hover:text-red-700"
-                type="button"
+              <Button
+                className="p-0 absolute top-1 right-2 text-xs text-destructive hover:text-destructive/80 h-4 w-4"
+                size="sm"
+                variant="ghost"
                 onClick={() => removeData(index)}>
                 X
-              </button>
+              </Button>
               {Object.entries(data).map(([key, value]) => (
                 <div
                   className="w-full flex items-center justify-between gap-2"

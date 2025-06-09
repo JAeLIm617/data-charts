@@ -1,21 +1,28 @@
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import {
-  type ChartConfig,
-  ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
+import { type ChartConfig } from "@/components/ui/chart";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { useConfigStore } from "@/database";
 import SidebarComponent from "@/Sidebar";
 import { useState } from "react";
-import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from "recharts";
+import AreaContainer from "./components/chart/_Area";
+import BarContainer from "./components/chart/_Bar";
+import LineContainer from "./components/chart/_Line";
+import { Toggle } from "./components/ui/toggle";
 
 function App() {
-  const { getLoad, getChartConfig, getChartData, getXAxisKey } =
-    useConfigStore();
+  const {
+    getLoad,
+    getChartType,
+    getChartConfig,
+    getChartData,
+    getXAxisKey,
+    getTooltip,
+    getLabel,
+    setChartType,
+    setTooltip,
+    setLabel,
+  } = useConfigStore();
   const [sideOpen, setSideOpen] = useState(true);
 
   if (getLoad()) {
@@ -35,50 +42,86 @@ function App() {
       </main>
     );
   }
+
+  const chartType = getChartType();
   const xAxisKey = getXAxisKey();
   const chartConfig: ChartConfig = getChartConfig() || {};
   const chartData = getChartData();
+  const tooltip = getTooltip();
+  const label = getLabel();
 
   return (
     <SidebarProvider open={sideOpen} onOpenChange={setSideOpen} defaultOpen>
       <SidebarComponent />
       <main className="relative flex h-screen w-full items-center justify-center bg-background">
         <SidebarTrigger className="absolute top-2 left-2" />
-        <Card className="h-[90vh] w-full container p-2">
+        <div className="absolute top-2 left-16 flex gap-2">
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => setChartType("bar")}>
+            Bar
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => setChartType("area")}>
+            Area
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => setChartType("line")}>
+            Line
+          </Button>
+        </div>
+        <div className="absolute top-2 right-2 flex gap-2">
+          <Toggle
+            variant="outline"
+            aria-label="Tooltip"
+            size="sm"
+            asChild
+            data-state={tooltip ? "on" : "off"}>
+            <button
+              className="h-full w-full cursor-pointer text-sm py-1 px-2"
+              onClick={() => setTooltip(!tooltip)}>
+              Tooltip
+            </button>
+          </Toggle>
+          <Toggle
+            variant="outline"
+            aria-label="Label"
+            size="sm"
+            asChild
+            data-state={label ? "on" : "off"}>
+            <button
+              className="h-full w-full cursor-pointer text-sm py-1 px-2"
+              onClick={() => setLabel(!label)}>
+              Label
+            </button>
+          </Toggle>
+        </div>
+        <Card className="h-[90vh] container rounded-none" id="chart-container">
           {chartData.length > 0 ? (
-            <ChartContainer
-              key={chartData.length}
-              config={chartConfig}
-              className="h-full w-full">
-              <BarChart accessibilityLayer data={chartData}>
-                <CartesianGrid vertical={false} />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <ChartLegend content={<ChartLegendContent />} />
-                {xAxisKey && (
-                  <XAxis
-                    dataKey={xAxisKey}
-                    tickLine={true}
-                    tickMargin={2}
-                    axisLine={true}
-                    tick={{ fill: "#5e5e5e", fontSize: "12px" }}
-                  />
-                )}
-                {Object.entries(chartConfig).map(([key, value]) => (
-                  <Bar
-                    key={key}
-                    dataKey={key}
-                    fill={value.color}
-                    radius={4}
-                    isAnimationActive={true}>
-                    <LabelList
-                      dataKey={key}
-                      position="top"
-                      style={{ fill: "#5e5e5e", fontSize: "12px" }}
-                    />
-                  </Bar>
-                ))}
-              </BarChart>
-            </ChartContainer>
+            chartType === "bar" ? (
+              <BarContainer
+                chartData={chartData}
+                chartConfig={chartConfig}
+                xAxisKey={xAxisKey}
+              />
+            ) : chartType === "area" ? (
+              <AreaContainer
+                chartData={chartData}
+                chartConfig={chartConfig}
+                xAxisKey={xAxisKey}
+              />
+            ) : chartType === "line" ? (
+              <LineContainer
+                chartData={chartData}
+                chartConfig={chartConfig}
+                xAxisKey={xAxisKey}
+              />
+            ) : null
           ) : (
             <div className="flex h-full items-center justify-center">
               <p className="text-sm text-muted-foreground">
