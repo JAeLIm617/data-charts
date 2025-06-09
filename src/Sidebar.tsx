@@ -169,6 +169,7 @@ function SidebarComponent() {
                 }
               }}
               placeholder="Enter data"
+              enterKeyHint="enter"
               type="text"
               maxLength={10}
             />
@@ -217,7 +218,7 @@ function SidebarComponent() {
                     {key}
                   </span>
                   <Input
-                    type={key === xAxisKey ? "text" : "number"} // xAxisKey일 때는 text, 그 외는 number
+                    type={key === xAxisKey ? "text" : "number"}
                     defaultValue={
                       key === xAxisKey ? (value as string) : (value as number)
                     }
@@ -226,12 +227,12 @@ function SidebarComponent() {
                         handleChangeData(index, key, e.target.value.trim());
                       } else {
                         const numValue = e.target.value.trim();
-                        // 숫자만 허용 (NaN 또는 빈 문자열 방지)
                         if (/^\d*\.?\d*$/.test(numValue)) {
                           handleChangeData(index, key, Number(numValue));
                         }
                       }
                     }}
+                    enterKeyHint="next"
                     className="w-30 no-spinner"
                   />
                 </div>

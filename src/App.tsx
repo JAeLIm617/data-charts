@@ -53,7 +53,7 @@ function App() {
   return (
     <SidebarProvider open={sideOpen} onOpenChange={setSideOpen} defaultOpen>
       <SidebarComponent />
-      <main className="relative flex h-screen w-full items-center justify-center bg-background">
+      <main className="relative flex h-screen w-full items-end justify-center bg-background pb-2">
         <SidebarTrigger className="absolute top-2 left-2" />
         <div className="absolute top-2 left-16 flex gap-2">
           <Button
