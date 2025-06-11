@@ -19,9 +19,13 @@ function App() {
     getXAxisKey,
     getTooltip,
     getLabel,
+    getXHide,
+    getYHide,
     setChartType,
     setTooltip,
     setLabel,
+    setXHide,
+    setYHide,
   } = useConfigStore();
   const [sideOpen, setSideOpen] = useState(true);
 
@@ -49,6 +53,15 @@ function App() {
   const chartData = getChartData();
   const tooltip = getTooltip();
   const label = getLabel();
+  const xHide = getXHide();
+  const yHide = getYHide();
+
+  const settings = [
+    { label: "Tooltip", value: tooltip, setValue: setTooltip },
+    { label: "Label", value: label, setValue: setLabel },
+    { label: "X Axis", value: xHide, setValue: setXHide, reverse: true },
+    { label: "Y Axis", value: yHide, setValue: setYHide, reverse: true },
+  ];
 
   return (
     <SidebarProvider open={sideOpen} onOpenChange={setSideOpen} defaultOpen>
@@ -76,30 +89,28 @@ function App() {
           </Button>
         </div>
         <div className="absolute top-2 right-2 flex gap-2">
-          <Toggle
-            variant="outline"
-            aria-label="Tooltip"
-            size="sm"
-            asChild
-            data-state={tooltip ? "on" : "off"}>
-            <button
-              className="h-full w-full cursor-pointer text-sm py-1 px-2"
-              onClick={() => setTooltip(!tooltip)}>
-              Tooltip
-            </button>
-          </Toggle>
-          <Toggle
-            variant="outline"
-            aria-label="Label"
-            size="sm"
-            asChild
-            data-state={label ? "on" : "off"}>
-            <button
-              className="h-full w-full cursor-pointer text-sm py-1 px-2"
-              onClick={() => setLabel(!label)}>
-              Label
-            </button>
-          </Toggle>
+          {settings.map((setting) => (
+            <Toggle
+              variant="outline"
+              aria-label={setting.label}
+              size="sm"
+              asChild
+              data-state={
+                setting.reverse
+                  ? !setting.value
+                    ? "on"
+                    : "off"
+                  : setting.value
+                  ? "on"
+                  : "off"
+              }
+              onClick={() => setting.setValue(!setting.value)}
+              key={setting.label}>
+              <button className="h-full w-full cursor-pointer text-sm py-1 px-2">
+                {setting.label}
+              </button>
+            </Toggle>
+          ))}
         </div>
         <Card className="h-[90vh] container rounded-none" id="chart-container">
           {chartData.length > 0 ? (
@@ -108,18 +119,30 @@ function App() {
                 chartData={chartData}
                 chartConfig={chartConfig}
                 xAxisKey={xAxisKey}
+                tooltip={tooltip}
+                label={label}
+                xHide={xHide}
+                yHide={yHide}
               />
             ) : chartType === "area" ? (
               <AreaContainer
                 chartData={chartData}
                 chartConfig={chartConfig}
                 xAxisKey={xAxisKey}
+                tooltip={tooltip}
+                label={label}
+                xHide={xHide}
+                yHide={yHide}
               />
             ) : chartType === "line" ? (
               <LineContainer
                 chartData={chartData}
                 chartConfig={chartConfig}
                 xAxisKey={xAxisKey}
+                tooltip={tooltip}
+                label={label}
+                xHide={xHide}
+                yHide={yHide}
               />
             ) : null
           ) : (

@@ -19,6 +19,8 @@ interface InitData {
   chartConfig: ChartConfig | null;
   chartData: Array<any>;
   xAxisKey?: string;
+  xHide: boolean;
+  yHide: boolean;
   tooltip: boolean;
   label: boolean;
 }
@@ -32,6 +34,8 @@ interface InitState extends InitData {
   getXAxisKey: () => string | undefined;
   getTooltip: () => boolean;
   getLabel: () => boolean;
+  getXHide: () => boolean;
+  getYHide: () => boolean;
   appendConfig: (config: ChartConfig) => void;
   appendData: (data: any) => void;
   removeConfig: (key: string) => void;
@@ -41,15 +45,19 @@ interface InitState extends InitData {
   setChartType: (type: ChartType) => void;
   setTooltip: (tooltip: boolean) => void;
   setLabel: (label: boolean) => void;
+  setXHide: (xHide: boolean) => void;
+  setYHide: (yHide: boolean) => void;
   resetData: () => void;
 }
 
 const initData: InitData = {
   isLoad: true,
+  chartType: "bar",
   chartConfig: null,
   chartData: [],
   xAxisKey: "x-name",
-  chartType: "bar",
+  xHide: false,
+  yHide: false,
   tooltip: true,
   label: true,
 };
@@ -68,6 +76,8 @@ export const useConfigStore = create<InitState>()(
       getXAxisKey: () => get().xAxisKey,
       getTooltip: () => get().tooltip,
       getLabel: () => get().label,
+      getXHide: () => get().xHide,
+      getYHide: () => get().yHide,
       appendConfig: (config) => {
         set((state) => ({
           chartConfig: { ...state.chartConfig, ...config },
@@ -104,6 +114,12 @@ export const useConfigStore = create<InitState>()(
       },
       setLabel: (label) => {
         set({ label });
+      },
+      setXHide: (xHide) => {
+        set({ xHide });
+      },
+      setYHide: (yHide) => {
+        set({ yHide });
       },
       resetData: () => {
         set({

@@ -5,18 +5,25 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { useConfigStore } from "@/database";
-import { CartesianGrid, LabelList, Line, LineChart, XAxis } from "recharts";
+import {
+  CartesianGrid,
+  LabelList,
+  Line,
+  LineChart,
+  XAxis,
+  YAxis,
+} from "recharts";
 import type { ChartContainerProps } from "./_Bar";
 
 function LineContainer({
   chartData,
   chartConfig,
   xAxisKey,
+  tooltip,
+  label,
+  xHide,
+  yHide,
 }: ChartContainerProps) {
-  const { getTooltip, getLabel } = useConfigStore();
-  const tooltip = getTooltip();
-  const label = getLabel();
   return (
     <ChartContainer
       key={chartData.length}
@@ -32,16 +39,21 @@ function LineContainer({
         <CartesianGrid vertical={false} />
         {tooltip && <ChartTooltip content={<ChartTooltipContent />} />}
         <ChartLegend content={<ChartLegendContent />} />
-        {xAxisKey && (
-          <XAxis
-            dataKey={xAxisKey}
-            tickLine={false}
-            axisLine={false}
-            tickMargin={5}
-            minTickGap={12}
-            tick={{ fontSize: "10px" }}
-          />
-        )}
+        <XAxis
+          hide={xHide}
+          dataKey={xAxisKey}
+          tickLine={false}
+          axisLine={true}
+          tick={{ fontSize: "10px" }}
+        />
+        <YAxis
+          hide={yHide}
+          tickCount={10}
+          tickLine={false}
+          axisLine={true}
+          tick={{ fontSize: "10px" }}
+          domain={[0, "dataMax + 10"]}
+        />
         {Object.entries(chartConfig).map(([key, value]) => (
           <Line
             type="linear"

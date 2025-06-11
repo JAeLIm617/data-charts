@@ -6,23 +6,34 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { useConfigStore } from "@/database";
-import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from "recharts";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  LabelList,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 export interface ChartContainerProps {
   chartData: any[];
   chartConfig: ChartConfig;
   xAxisKey?: string;
+  tooltip: boolean;
+  label: boolean;
+  xHide: boolean;
+  yHide: boolean;
 }
 
 function BarContainer({
   chartData,
   chartConfig,
   xAxisKey,
+  tooltip,
+  label,
+  xHide,
+  yHide,
 }: ChartContainerProps) {
-  const { getTooltip, getLabel } = useConfigStore();
-  const tooltip = getTooltip();
-  const label = getLabel();
   return (
     <ChartContainer
       key={chartData.length}
@@ -32,16 +43,21 @@ function BarContainer({
         <CartesianGrid vertical={false} />
         {tooltip && <ChartTooltip content={<ChartTooltipContent />} />}
         <ChartLegend content={<ChartLegendContent />} />
-        {xAxisKey && (
-          <XAxis
-            dataKey={xAxisKey}
-            tickLine={false}
-            axisLine={false}
-            tickMargin={5}
-            minTickGap={12}
-            tick={{ fontSize: "10px" }}
-          />
-        )}
+        <XAxis
+          hide={xHide}
+          dataKey={xAxisKey}
+          tickLine={false}
+          axisLine={true}
+          tick={{ fontSize: "10px" }}
+        />
+        <YAxis
+          hide={yHide}
+          tickCount={10}
+          tickLine={false}
+          axisLine={true}
+          tick={{ fontSize: "10px" }}
+          domain={[0, "dataMax + 10"]}
+        />
         {Object.entries(chartConfig).map(([key, value]) => (
           <Bar
             key={key}
