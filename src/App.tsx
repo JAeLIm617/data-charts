@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { type ChartConfig } from "@/components/ui/chart";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
@@ -8,7 +7,7 @@ import { useState } from "react";
 import AreaContainer from "./components/chart/_Area";
 import BarContainer from "./components/chart/_Bar";
 import LineContainer from "./components/chart/_Line";
-import { Toggle } from "./components/ui/toggle";
+import { ThemeProvider } from "./theme-provider";
 
 function App() {
   const {
@@ -21,11 +20,6 @@ function App() {
     getLabel,
     getXHide,
     getYHide,
-    setChartType,
-    setTooltip,
-    setLabel,
-    setXHide,
-    setYHide,
   } = useConfigStore();
   const [sideOpen, setSideOpen] = useState(true);
 
@@ -56,105 +50,56 @@ function App() {
   const xHide = getXHide();
   const yHide = getYHide();
 
-  const settings = [
-    { label: "Tooltip", value: tooltip, setValue: setTooltip },
-    { label: "Label", value: label, setValue: setLabel },
-    { label: "X Axis", value: xHide, setValue: setXHide, reverse: true },
-    { label: "Y Axis", value: yHide, setValue: setYHide, reverse: true },
-  ];
-
   return (
-    <SidebarProvider open={sideOpen} onOpenChange={setSideOpen} defaultOpen>
-      <SidebarComponent />
-      <main className="relative flex h-screen w-full items-end justify-center bg-background pb-2">
-        <SidebarTrigger className="absolute top-2 left-2" />
-        <div className="absolute top-2 left-16 flex gap-2">
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => setChartType("bar")}>
-            Bar
-          </Button>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => setChartType("area")}>
-            Area
-          </Button>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => setChartType("line")}>
-            Line
-          </Button>
-        </div>
-        <div className="absolute top-2 right-2 flex gap-2">
-          {settings.map((setting) => (
-            <Toggle
-              variant="outline"
-              aria-label={setting.label}
-              size="sm"
-              asChild
-              data-state={
-                setting.reverse
-                  ? !setting.value
-                    ? "on"
-                    : "off"
-                  : setting.value
-                  ? "on"
-                  : "off"
-              }
-              onClick={() => setting.setValue(!setting.value)}
-              key={setting.label}>
-              <button className="h-full w-full cursor-pointer text-sm py-1 px-2">
-                {setting.label}
-              </button>
-            </Toggle>
-          ))}
-        </div>
-        <Card className="h-[90vh] container rounded-none" id="chart-container">
-          {chartData.length > 0 ? (
-            chartType === "bar" ? (
-              <BarContainer
-                chartData={chartData}
-                chartConfig={chartConfig}
-                xAxisKey={xAxisKey}
-                tooltip={tooltip}
-                label={label}
-                xHide={xHide}
-                yHide={yHide}
-              />
-            ) : chartType === "area" ? (
-              <AreaContainer
-                chartData={chartData}
-                chartConfig={chartConfig}
-                xAxisKey={xAxisKey}
-                tooltip={tooltip}
-                label={label}
-                xHide={xHide}
-                yHide={yHide}
-              />
-            ) : chartType === "line" ? (
-              <LineContainer
-                chartData={chartData}
-                chartConfig={chartConfig}
-                xAxisKey={xAxisKey}
-                tooltip={tooltip}
-                label={label}
-                xHide={xHide}
-                yHide={yHide}
-              />
-            ) : null
-          ) : (
-            <div className="flex h-full items-center justify-center">
-              <p className="text-sm text-muted-foreground">
-                데이터가 없습니다.
-              </p>
-            </div>
-          )}
-        </Card>
-      </main>
-    </SidebarProvider>
+    <ThemeProvider defaultTheme="dark">
+      <SidebarProvider open={sideOpen} onOpenChange={setSideOpen} defaultOpen>
+        <SidebarComponent />
+        <main className="relative flex h-screen w-full items-end justify-center bg-background p-2">
+          <SidebarTrigger className="absolute top-2 left-2" />
+          <Card className="h-full container rounded-none" id="chart-container">
+            {chartData.length > 0 ? (
+              chartType === "bar" ? (
+                <BarContainer
+                  chartData={chartData}
+                  chartConfig={chartConfig}
+                  xAxisKey={xAxisKey}
+                  tooltip={tooltip}
+                  label={label}
+                  xHide={xHide}
+                  yHide={yHide}
+                />
+              ) : chartType === "area" ? (
+                <AreaContainer
+                  chartData={chartData}
+                  chartConfig={chartConfig}
+                  xAxisKey={xAxisKey}
+                  tooltip={tooltip}
+                  label={label}
+                  xHide={xHide}
+                  yHide={yHide}
+                />
+              ) : chartType === "line" ? (
+                <LineContainer
+                  chartData={chartData}
+                  chartConfig={chartConfig}
+                  xAxisKey={xAxisKey}
+                  tooltip={tooltip}
+                  label={label}
+                  xHide={xHide}
+                  yHide={yHide}
+                />
+              ) : null
+            ) : (
+              <div className="flex h-full items-center justify-center">
+                <p className="text-sm text-muted-foreground">
+                  데이터가 없습니다.
+                </p>
+              </div>
+            )}
+          </Card>
+        </main>
+      </SidebarProvider>
+    </ThemeProvider>
   );
 }
 
